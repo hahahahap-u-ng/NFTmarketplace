@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 
-//INTERNAL IMPORT
+// INTERNAL IMPORT
 import Style from "../styles/index.module.css";
 import {
   HeroSection,
@@ -21,7 +21,7 @@ import {
 } from "../components/componentsindex";
 import { getTopCreators } from "../TopCreators/TopCreators";
 
-//IMPORTING CONTRCT DATA
+// IMPORTING CONTRACT DATA
 import { NFTMarketplaceContext } from "../Context/NFTMarketplaceContext";
 
 const Home = () => {
@@ -35,24 +35,31 @@ const Home = () => {
   const { fetchNFTs } = useContext(NFTMarketplaceContext);
   const [nfts, setNfts] = useState([]);
   const [nftsCopy, setNftsCopy] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("all");
 
   useEffect(() => {
     if (currentAccount) {
       fetchNFTs().then((items) => {
-        console.log("Fetched NFTs:", items); // Kiểm tra dữ liệu trả về
+        console.log("Fetched NFTs:", items);
         setNfts(items?.reverse());
         setNftsCopy(items);
       });
     }
   }, [currentAccount]);
-  
 
-  //CREATOR LIST
+  const onFilterSelect = (category) => {
+    setSelectedCategory(category);
+  };
+
+  const filteredNFTs = nfts.filter((el) => {
+    return selectedCategory === "Tất cả" || selectedCategory === "all" || el.category === selectedCategory;
+  });
+
+  const categories = ["Tất cả", ...new Set(nfts.map((item) => item.category))];
 
   const creators = getTopCreators(nfts);
-  // console.log(creators);
 
-  return (             
+  return (
     <div className={Style.homePage}>
       <HeroSection />
       {/* <Service /> */}
@@ -74,8 +81,8 @@ const Home = () => {
         heading="Featured NFTs"
         paragraph="Discover the most outstanding NFTs in all topics of life."
       /> */}
-      <Filter />
-      {nfts?.length == 0 ? <Loader /> : <NFTCard NFTData={nfts} />}
+      <Filter categories={categories} onFilterSelect={onFilterSelect} />
+      {nfts?.length == 0 ? <Loader /> : <NFTCard NFTData={filteredNFTs} />}
 
       {/* <Title
         heading="Browse by category"

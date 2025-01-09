@@ -57,7 +57,7 @@ const searchPage = () => {
   };
 
   const filteredNFTs = nfts.filter((el) => {
-    return selectedCategory === "all" || el.category === selectedCategory;
+    return selectedCategory === "Tất cả" || selectedCategory === "all" || el.category === selectedCategory;
   });
 
   const categories = ["Tất cả", ...new Set(nfts.map((item) => item.category))];

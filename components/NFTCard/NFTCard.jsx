@@ -4,13 +4,14 @@ import { BsImages } from "react-icons/bs";
 import Image from "next/image";
 import Link from "next/link";
 
-//INTERNAL IMPORT
+// INTERNAL IMPORT
 import Style from "./NFTCard.module.css";
 import images from "../../img";
 
 const NFTCard = ({ NFTData }) => {
   const [like, setLike] = useState(true);
   const [fileType, setFileType] = useState({});
+  const [remainingTimes, setRemainingTimes] = useState({});
 
   const likeNft = () => {
     setLike(!like);
@@ -26,6 +27,28 @@ const NFTCard = ({ NFTData }) => {
       : "image";
   };
 
+  const calculateRemainingTime = (startTime, duration) => {
+    // Chuyển duration sang số nguyên
+    const durationInDays = parseInt(duration, 10);
+    
+    // Tạo đối tượng ngày kết thúc
+    const endTime = new Date(startTime);
+    endTime.setDate(endTime.getDate() + durationInDays); // Cộng thêm duration ngày
+  
+    const now = new Date();
+    const diffTime = endTime - now;
+  
+    if (diffTime <= 0) return "Đã hết hạn";
+  
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const diffHours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const diffMinutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+    const diffSeconds = Math.floor((diffTime % (1000 * 60)) / 1000);
+  
+    return `${diffDays}d : ${diffHours}h : ${diffMinutes}m : ${diffSeconds}s`;
+  };
+  
+
   useEffect(() => {
     const checkFiles = async () => {
       const typeStatus = {};
@@ -35,6 +58,17 @@ const NFTCard = ({ NFTData }) => {
       setFileType(typeStatus);
     };
     checkFiles();
+
+    // Cập nhật thời gian đếm ngược mỗi giây
+    const interval = setInterval(() => {
+      const times = {};
+      for (const item of NFTData) {
+        times[item.tokenId] = calculateRemainingTime(item.time, item.duration);
+      }
+      setRemainingTimes(times);
+    }, 1000);
+
+    return () => clearInterval(interval);
   }, [NFTData]);
 
   return (
@@ -92,7 +126,7 @@ const NFTCard = ({ NFTData }) => {
               <div className={Style.NFTCard_box_update_right}>
                 <div className={Style.NFTCard_box_update_right_info}>
                   <small>Thời gian còn lại</small>
-                  <p>3h : 15m : 20s</p>
+                  <p>{remainingTimes[el.tokenId] || "Đang tải..."}</p>
                 </div>
               </div>
             </div>

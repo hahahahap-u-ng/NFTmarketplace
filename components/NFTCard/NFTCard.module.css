@@ -61,7 +61,7 @@
 
 .NFTCard_box_update_right {
   background-color: var(--shadow-light-color);
-  padding: 0.5rem 5rem;
+  padding: 0.3rem 1rem;
   text-align: center;
   transform: skewX(45deg);
   border-bottom-left-radius: 1rem;

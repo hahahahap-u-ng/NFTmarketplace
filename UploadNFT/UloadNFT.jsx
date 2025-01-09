@@ -6,7 +6,7 @@ import { TiTick } from "react-icons/ti";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
-//INTERNAL IMPORT
+// INTERNAL IMPORT
 import Style from "./Upload.module.css";
 import formStyle from "../AccountPage/Form/Form.module.css";
 import images from "../img";
@@ -20,7 +20,7 @@ const UloadNFT = ({ uploadToIPFS, createNFT, uploadToPinata }) => {
   const [website, setWebsite] = useState("");
   const [description, setDescription] = useState("");
   const [royalties, setRoyalties] = useState("");
-  const [fileSize, setFileSize] = useState("");
+  const [duration, setDuration] = useState("");
   const [category, setCategory] = useState(0);
   const [properties, setProperties] = useState("");
   const [image, setImage] = useState(null);
@@ -60,7 +60,7 @@ const UloadNFT = ({ uploadToIPFS, createNFT, uploadToPinata }) => {
         website={website}
         description={description}
         royalties={royalties}
-        fileSize={fileSize}
+        duration={duration}
         category={category}
         properties={properties}
         setImage={setImage}
@@ -73,7 +73,6 @@ const UloadNFT = ({ uploadToIPFS, createNFT, uploadToPinata }) => {
           <label htmlFor="nft">Tên tệp</label>
           <input
             type="text"
-            
             className={formStyle.Form_box_input_userName}
             onChange={(e) => setName(e.target.value)}
           />
@@ -85,14 +84,13 @@ const UloadNFT = ({ uploadToIPFS, createNFT, uploadToPinata }) => {
             <div className={formStyle.Form_box_input_box_icon}>
               <MdOutlineHttp />
             </div>
-            
             <input
               type="text"
               placeholder="website"
               onChange={(e) => setWebsite(e.target.value)}
             />
           </div>
-          <p>   Ciscrypt sẽ bao gồm một liên kết đến URL này trên trang chi tiết của mục này, để người dùng có thể nhấp vào để tìm hiểu thêm về mục đó. Bạn được phép liên kết đến trang web của riêng bạn với nhiều chi tiết hơn.</p>
+          <p>Ciscrypt sẽ bao gồm một liên kết đến URL này trên trang chi tiết của mục này, để người dùng có thể nhấp vào để tìm hiểu thêm về mục đó. Bạn được phép liên kết đến trang web của riêng bạn với nhiều chi tiết hơn.</p>
         </div>
 
         <div className={formStyle.Form_box_input}>
@@ -109,8 +107,6 @@ const UloadNFT = ({ uploadToIPFS, createNFT, uploadToPinata }) => {
 
         <div className={formStyle.Form_box_input}>
           <label htmlFor="name">Chọn bộ sưu tập</label>
-          
-
           <div className={Style.upload_box_slider_div}>
             {categoryArry.map((el, i) => (
               <div
@@ -155,15 +151,15 @@ const UloadNFT = ({ uploadToIPFS, createNFT, uploadToPinata }) => {
             </div>
           </div>
           <div className={formStyle.Form_box_input}>
-            <label htmlFor="size">Kích cỡ</label>
+            <label htmlFor="duration">Thời gian</label>
             <div className={formStyle.Form_box_input_box}>
               <div className={formStyle.Form_box_input_box_icon}>
                 <MdOutlineAttachFile />
               </div>
               <input
                 type="text"
-                placeholder="165MB"
-                onChange={(e) => setFileSize(e.target.value)}
+                placeholder=" ngày"
+                onChange={(e) => setDuration(e.target.value)}
               />
             </div>
           </div>
@@ -199,20 +195,22 @@ const UloadNFT = ({ uploadToIPFS, createNFT, uploadToPinata }) => {
         <div className={Style.upload_box_btn}>
           <Button
             btnName="Tải lên"
-            handleClick={async () =>
-              createNFT(
+            handleClick={async () => {
+              const time = new Date().toISOString(); // Thời gian tải lên hiện tại
+              await createNFT(
                 name,
                 price,
                 image,
                 category,
                 description,
+                time,
+                duration,
                 router
                 // website,
                 // royalties,
-                // fileSize,
                 // properties
-              )
-            }
+              );
+            }}
             classStyle={Style.upload_box_btn_style}
           />
           <Button

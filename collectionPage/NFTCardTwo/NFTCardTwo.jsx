@@ -36,6 +36,15 @@ const NFTCardTwo = ({ NFTData }) => {
       : "image";
   };
 
+  // Tính toán thời gian hiển thị
+  const getTimeDifference = (uploadTime) => {
+    const now = new Date();
+    const uploadDate = new Date(uploadTime);
+    const diffTime = Math.abs(now - uploadDate);
+    const diffMinutes = Math.floor(diffTime / (1000 * 60));
+    return diffMinutes;
+  };
+
   // Xử lý dữ liệu sau khi nhận từ props
   useEffect(() => {
     const checkFiles = async () => {
@@ -111,7 +120,7 @@ const NFTCardTwo = ({ NFTData }) => {
                 <p>{el.price} ETH</p>
               </div>
               <p className={Style.NFTCardTwo_box_price_stock}>
-                <MdTimer /> <span>{i + 1} phút trước</span>
+                <MdTimer /> <span>{getTimeDifference(el.time)} phút trước</span>
               </p>
             </div>
           </div>

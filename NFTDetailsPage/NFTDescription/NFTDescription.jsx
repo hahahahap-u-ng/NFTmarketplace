@@ -20,13 +20,13 @@ import {
 } from "react-icons/ti";
 import { BiTransferAlt, BiDollar } from "react-icons/bi";
 
-//INTERNAL IMPORT
+// INTERNAL IMPORT
 import Style from "./NFTDescription.module.css";
 import images from "../../img";
 import { Button } from "../../components/componentsindex.js";
 import { NFTTabs } from "../NFTDetailsIndex";
 
-//IMPORT SMART CONTRACT
+// IMPORT SMART CONTRACT
 import { NFTMarketplaceContext } from "../../Context/NFTMarketplaceContext";
 
 const NFTDescription = ({ nft }) => {
@@ -35,6 +35,12 @@ const NFTDescription = ({ nft }) => {
   const [history, setHistory] = useState(true);
   const [provanance, setProvanance] = useState(false);
   const [owner, setOwner] = useState(false);
+  const [remainingTime, setRemainingTime] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
 
   const router = useRouter();
 
@@ -92,7 +98,7 @@ const NFTDescription = ({ nft }) => {
     }
   };
 
-  const openOwmer = () => {
+  const openOwner = () => {
     if (!owner) {
       setOwner(true);
       setHistory(false);
@@ -103,13 +109,42 @@ const NFTDescription = ({ nft }) => {
     }
   };
 
-  //SMART CONTRACT DATA
+  // SMART CONTRACT DATA
   const { buyNFT, currentAccount } = useContext(NFTMarketplaceContext);
+
+  const calculateRemainingTime = (startTime, duration) => {
+    const durationInDays = parseInt(duration, 10);
+    const endTime = new Date(startTime);
+    endTime.setDate(endTime.getDate() + durationInDays);
+    const now = new Date();
+    const diffTime = endTime - now;
+    if (diffTime <= 0) {
+      return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+    }
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const diffHours = Math.floor(
+      (diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    );
+    const diffMinutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+    const diffSeconds = Math.floor((diffTime % (1000 * 60)) / 1000);
+    return { days: diffDays, hours: diffHours, minutes: diffMinutes, seconds: diffSeconds };
+  };
+
+  useEffect(() => {
+    const updateRemainingTime = () => {
+      setRemainingTime(calculateRemainingTime(nft.time, nft.duration));
+    };
+
+    updateRemainingTime();
+    const interval = setInterval(updateRemainingTime, 1000);
+
+    return () => clearInterval(interval);
+  }, [nft.time, nft.duration]);
 
   return (
     <div className={Style.NFTDescription}>
       <div className={Style.NFTDescription_box}>
-        {/* //Part ONE */}
+        {/* // Part ONE */}
         <div className={Style.NFTDescription_box_share}>
           {/* <p>Virtual Worlds</p> */}
           <div className={Style.NFTDescription_box_share_box}>
@@ -121,10 +156,10 @@ const NFTDescription = ({ nft }) => {
             {social && (
               <div className={Style.NFTDescription_box_share_box_social}>
                 <a href="#">
-                  <TiSocialFacebook /> Facebooke
+                  <TiSocialFacebook /> Facebook
                 </a>
                 <a href="#">
-                  <TiSocialInstagram /> Instragram
+                  <TiSocialInstagram /> Instagram
                 </a>
                 <a href="#">
                   <TiSocialLinkedin /> LinkedIn
@@ -137,31 +172,9 @@ const NFTDescription = ({ nft }) => {
                 </a>
               </div>
             )}
-
-            {/* <BsThreeDots
-              className={Style.NFTDescription_box_share_box_icon}
-              onClick={() => openNFTMenu()}
-            /> */}
-
-            {/* {NFTMenu && (
-              <div className={Style.NFTDescription_box_share_box_social}>
-                <a href="#">
-                  <BiDollar /> Change price
-                </a>
-                <a href="#">
-                  <BiTransferAlt /> Transfer
-                </a>
-                <a href="#">
-                  <MdReportProblem /> Report abouse
-                </a>
-                <a href="#">
-                  <MdOutlineDeleteSweep /> Delete item
-                </a>
-              </div>
-            )} */}
           </div>
         </div>
-        {/* //Part TWO */}
+        {/* // Part TWO */}
         <div className={Style.NFTDescription_box_profile}>
           <h1>
             {nft.name} #{nft.tokenId}
@@ -177,7 +190,6 @@ const NFTDescription = ({ nft }) => {
               />
               <div className={Style.NFTDescription_box_profile_box_left_info}>
                 <small>Tác giả</small> <br />
-                {/* <Link href={{ pathname: "/author", query: `${nft.seller}` }}> */}
                 <Link href={{ pathname: "/author" }}>
                   <span>
                     Trung hiếu <MdVerified />
@@ -205,60 +217,35 @@ const NFTDescription = ({ nft }) => {
           </div>
 
           <div className={Style.NFTDescription_box_profile_biding}>
-            {/* <p>
-              <MdTimer /> <span>Auction ending in:</span>
-            </p> */}
-
-            {/* <div className={Style.NFTDescription_box_profile_biding_box_timer}>
-              <div
-                className={
-                  Style.NFTDescription_box_profile_biding_box_timer_item
-                }
-              >
-                <p>2</p>
+            <p>
+              <MdTimer /> <span>Kết thúc vào: </span>
+            </p>
+            <div className={Style.NFTDescription_box_profile_biding_box_timer}>
+              <div className={Style.NFTDescription_box_profile_biding_box_timer_item}>
+                <p>{remainingTime.days}</p>
                 <span>Days</span>
               </div>
-              <div
-                className={
-                  Style.NFTDescription_box_profile_biding_box_timer_item
-                }
-              >
-                <p>22</p>
-                <span>hours</span>
+              <div className={Style.NFTDescription_box_profile_biding_box_timer_item}>
+                <p>{remainingTime.hours}</p>
+                <span>Hours</span>
               </div>
-              <div
-                className={
-                  Style.NFTDescription_box_profile_biding_box_timer_item
-                }
-              >
-                <p>45</p>
-                <span>mins</span>
+              <div className={Style.NFTDescription_box_profile_biding_box_timer_item}>
+                <p>{remainingTime.minutes}</p>
+                <span>Minutes</span>
               </div>
-              <div
-                className={
-                  Style.NFTDescription_box_profile_biding_box_timer_item
-                }
-              >
-                <p>12</p>
-                <span>secs</span>
+              <div className={Style.NFTDescription_box_profile_biding_box_timer_item}>
+                <p>{remainingTime.seconds}</p>
+                <span>Seconds</span>
               </div>
-            </div> */}
-
+            </div>
             <div className={Style.NFTDescription_box_profile_biding_box_price}>
-              <div
-                className={
-                  Style.NFTDescription_box_profile_biding_box_price_bid
-                }
-              >
+              <div className={Style.NFTDescription_box_profile_biding_box_price_bid}>
                 <small>Giá</small>
                 <p>
                   {nft.price} ETH <span></span>
                 </p>
               </div>
-
-              {/* <span>[96 in stock]</span> */}
             </div>
-
             <div className={Style.NFTDescription_box_profile_biding_box_button}>
               {currentAccount == nft.seller.toLowerCase() ? (
                 <p>Bạn không thể mua sản phẩm mình đang sở hữu</p>
@@ -281,37 +268,7 @@ const NFTDescription = ({ nft }) => {
                   classStyle={Style.button}
                 />
               )}
-
-              {/* <Button
-                icon={<FaPercentage />}
-                btnName="Make offer"
-                handleClick={() => {}}
-                classStyle={Style.button}
-              /> */}
             </div>
-
-            {/* <div className={Style.NFTDescription_box_profile_biding_box_tabs}>
-              <button onClick={(e) => openTabs(e)}>Bid History</button>
-              <button onClick={(e) => openTabs(e)}>Provanance</button>
-              <button onClick={() => openOwmer()}>Owner</button>
-            </div>
-
-            {history && (
-              <div className={Style.NFTDescription_box_profile_biding_box_card}>
-                <NFTTabs dataTab={historyArray} />
-              </div>
-            )}
-            {provanance && (
-              <div className={Style.NFTDescription_box_profile_biding_box_card}>
-                <NFTTabs dataTab={provananceArray} />
-              </div>
-            )} */}
-
-            {/* {owner && (
-              <div className={Style.NFTDescription_box_profile_biding_box_card}>
-                <NFTTabs dataTab={ownerArray} icon={<MdVerified />} />
-              </div>
-            )} */}
           </div>
         </div>
       </div>

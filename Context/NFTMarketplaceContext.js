@@ -131,11 +131,11 @@ export const NFTMarketplaceProvider = ({ children }) => {
   };
 
   //---CREATENFT FUNCTION
-  const createNFT = async (name, price, image, category, description,  router) => {
+  const createNFT = async (name, price, image, category, description, time, duration,  router) => {
     if (!name || !description || !price || !image || !category)
       return setError("Data Is Missing"), setOpenError(true);
   
-    const data = JSON.stringify({ name, description, image, category });
+    const data = JSON.stringify({ name, description, image, category, time, duration, });
   
     try {
       const response = await axios({
@@ -209,7 +209,7 @@ export const NFTMarketplaceProvider = ({ children }) => {
               const tokenURI = await contract.tokenURI(tokenId);
 
               const {
-                data: { image, name, category, description },
+                data: { image, name, category, description, time, duration },
               } = await axios.get(tokenURI, {});
               const price = ethers.utils.formatUnits(
                 unformattedPrice.toString(),
@@ -225,6 +225,8 @@ export const NFTMarketplaceProvider = ({ children }) => {
                 name,
                 category,
                 description,
+                time, 
+                duration,
                 
                 tokenURI,
               };
@@ -260,7 +262,7 @@ export const NFTMarketplaceProvider = ({ children }) => {
             async ({ tokenId, seller, owner, price: unformattedPrice }) => {
               const tokenURI = await contract.tokenURI(tokenId);
               const {
-                data: { image, name, description },
+                data: { image, name, description, time, duration, },
               } = await axios.get(tokenURI);
               const price = ethers.utils.formatUnits(
                 unformattedPrice.toString(),
@@ -275,6 +277,8 @@ export const NFTMarketplaceProvider = ({ children }) => {
                 image,
                 name,
                 description,
+                time, 
+                duration,
                 tokenURI,
               };
             }

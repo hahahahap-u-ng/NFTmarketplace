@@ -131,14 +131,12 @@ export const NFTMarketplaceProvider = ({ children }) => {
   };
 
   //---CREATENFT FUNCTION
-  const createNFT = async (name, price, image, 
-    
-    description, router) => {
-    if (!name || !description || !price || !image)
+  const createNFT = async (name, price, image, category, description,  router) => {
+    if (!name || !description || !price || !image || !category)
       return setError("Data Is Missing"), setOpenError(true);
-
-    const data = JSON.stringify({ name, description, image });
-
+  
+    const data = JSON.stringify({ name, description, image, category });
+  
     try {
       const response = await axios({
         method: "POST",
@@ -150,10 +148,10 @@ export const NFTMarketplaceProvider = ({ children }) => {
           "Content-Type": "application/json",
         },
       });
-
+  
       const url = `https://gateway.pinata.cloud/ipfs/${response.data.IpfsHash}`;
       console.log(url);
-
+  
       await createSale(url, price);
       router.push("/searchPage");
     } catch (error) {
@@ -161,6 +159,7 @@ export const NFTMarketplaceProvider = ({ children }) => {
       setOpenError(true);
     }
   };
+  
 
   //--- createSale FUNCTION
   const createSale = async (url, formInputPrice, isReselling, id) => {
@@ -210,7 +209,7 @@ export const NFTMarketplaceProvider = ({ children }) => {
               const tokenURI = await contract.tokenURI(tokenId);
 
               const {
-                data: { image, name, description },
+                data: { image, name, category, description },
               } = await axios.get(tokenURI, {});
               const price = ethers.utils.formatUnits(
                 unformattedPrice.toString(),
@@ -224,7 +223,9 @@ export const NFTMarketplaceProvider = ({ children }) => {
                 owner,
                 image,
                 name,
+                category,
                 description,
+                
                 tokenURI,
               };
             }

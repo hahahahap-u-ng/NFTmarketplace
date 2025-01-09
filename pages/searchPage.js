@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 
-//INTRNAL IMPORT
+// INTERNAL IMPORT
 import Style from "../styles/searchPage.module.css";
 import { Slider, Brand, Loader } from "../components/componentsindex";
 import { SearchBar } from "../SearchPage/searchBarIndex";
@@ -9,7 +9,7 @@ import { Filter } from "../components/componentsindex";
 import { NFTCardTwo, Banner } from "../collectionPage/collectionIndex";
 import images from "../img";
 
-//SMART CONTRACT IMPORT
+// SMART CONTRACT IMPORT
 import { NFTMarketplaceContext } from "../Context/NFTMarketplaceContext";
 
 const searchPage = () => {
@@ -18,6 +18,7 @@ const searchPage = () => {
   );
   const [nfts, setNfts] = useState([]);
   const [nftsCopy, setNftsCopy] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("all");
 
   useEffect(() => {
     try {
@@ -51,26 +52,22 @@ const searchPage = () => {
     }
   };
 
-  // const collectionArray = [
-  //   images.nft_image_1,
-  //   images.nft_image_2,
-  //   images.nft_image_3,
-  //   images.nft_image_1,
-  //   images.nft_image_2,
-  //   images.nft_image_3,
-  //   images.nft_image_1,
-  //   images.nft_image_2,
-  // ];
+  const onFilterSelect = (category) => {
+    setSelectedCategory(category);
+  };
+
+  const filteredNFTs = nfts.filter((el) => {
+    return selectedCategory === "all" || el.category === selectedCategory;
+  });
+
+  const categories = ["Tất cả", ...new Set(nfts.map((item) => item.category))];
+
   return (
     <div className={Style.searchPage}>
       <Banner bannerImage={images.creatorbackground2} />
-      <SearchBar
-        onHandleSearch={onHandleSearch}
-        onClearSearch={onClearSearch}
-      />
-      <Filter />
-      {nfts?.length == 0 ? <Loader /> : <NFTCardTwo NFTData={nfts} />}
-      {/* <Slider /> */}
+      <SearchBar onHandleSearch={onHandleSearch} onClearSearch={onClearSearch} />
+      <Filter categories={categories} onFilterSelect={onFilterSelect} />
+      {nfts?.length == 0 ? <Loader /> : <NFTCardTwo NFTData={filteredNFTs} />}
       <Brand />
     </div>
   );

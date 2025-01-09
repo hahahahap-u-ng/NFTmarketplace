@@ -30,11 +30,11 @@ const UloadNFT = ({ uploadToIPFS, createNFT, uploadToPinata }) => {
   const categoryArry = [
     {
       image: images.nft_image_1,
-      category: "Thể thao",
+      category: "Hình ảnh",
     },
     {
       image: images.nft_image_2,
-      category: "Nghệ thuật",
+      category: "Video",
     },
     {
       image: images.nft_image_3,
@@ -46,7 +46,7 @@ const UloadNFT = ({ uploadToIPFS, createNFT, uploadToPinata }) => {
     },
     {
       image: images.founder3,
-      category: "Nhiếp ảnh",
+      category: "Tài liệu và hợp đồng",
     },
   ];
 
@@ -204,12 +204,12 @@ const UloadNFT = ({ uploadToIPFS, createNFT, uploadToPinata }) => {
                 name,
                 price,
                 image,
+                category,
                 description,
                 router
                 // website,
                 // royalties,
                 // fileSize,
-                // category,
                 // properties
               )
             }
